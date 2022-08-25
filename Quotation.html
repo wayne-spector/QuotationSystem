@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>閎國報價系統</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.12.1/b-2.2.3/sl-1.4.0/datatables.min.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="Editor-2.0.8/css/editor.dataTables.css"> -->
+ 
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="Quotation.css">
+    
+    <script src="Quotation.js"></script>
+</head>
+<body>
+    <div>
+        <button class="btn" id="printPg" onclick="Printpg()">列印</button>
+        <button class="btn" id="savePg" onclick="Savepg()">存檔</button>
+        <button class="btn" onclick="deletelocalS()">清除所有資料</button>
+    </div>
+    <div class="grid-container">
+        <div class="item1">
+            <div style="text-align: center;">
+                <h3>閎國興業股份有限公司</h3>
+                <h5>TEL:(04)25283991 FAX:(04)25230131</h5>
+                <h5>臺中市豐原區朴子街355巷13號</h5>
+            </div>
+            <div>
+                <h3 style="text-align: center;">估價單</h3>
+                <b style="float:right ;"> Date : <input type="date" id="date" name="date" style="border:none;font-size: 18px;"></b>
+            </div>
+        </div>    
+        <hr>
+
+        <div class="item2">
+            <div>
+                <table border="1" style="text-align: center; width:400px;height: 150px;">
+                    <tr>
+                        <th>客戶名稱</th>
+                        <td id="CLname" style="width: 300px;"></td>
+                    </tr>
+                    <tr>
+                        <th>客戶編號</th>
+                        <td id="CLid"></td>
+                    </tr>
+                    <tr>
+                        <th>電話號碼</th>
+                        <td id="CLnumber"></td>
+                    </tr>
+                    <tr>
+                        <th>傳真號碼</th>
+                        <td id="CLfax"></td>
+                    </tr>
+                    <tr>
+                        <th>聯絡人</th>
+                        <td id="CLcontact"></td>
+                    </tr>
+                </table>
+                <button class="btn" onclick="openClient()">選擇客戶</button>
+            </div> 
+            <hr>
+            <div style="height:300px ;">
+                <h4 style="margin-top: 0px;">材料費<button class="btn" onclick="insertRow()">新增</button></h4>
+                    <section class="section">
+                        <table id="details" border="1" style="width: 400px;">
+                            <thead>
+                                <th>材料名稱</th>
+                                <th>材質</th>
+                                <th>單價(kg)</th>
+                                <th>個數重量(g)</th>
+                                <th>每個材料費用</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5">
+                                    <b style="font-size: 6px;">(單重以實物為準)</b>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+            </div>
+            <hr>
+            <div >
+                <h4 style="margin-top: 0px;">總計<button  class="btn"onclick="calculate()" >計算</button></h4>
+                <table border="solid,1" id="Total" style="height: 150px; width: 400px;">
+                    <tbody>
+                        <tr>
+                            <th>1</th>
+                            <th>材料費</th>
+                            <td id="total">0</td>
+                            
+                        </tr>
+                        <tr>
+                            <th>2</th>
+                            <th>工程費</th>
+                            <td id="lastprojPrice">0</td>
+                            
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <th>運費與包裝</th>
+                            <td contenteditable="true" id="Freight">0</td>
+                            
+                        </tr>
+                        <tr>
+                            <th>4</th>
+                            <th>五金及油費</th>
+                            <td contenteditable="true" id="gasFee">0</td>
+                            
+                        </tr>
+                        <tr>
+                            <th>*</th>
+                            <th>估價日期</th>
+                            <td style="font-size:7px; text-align:left;">有效期限<input type="text" style="border:none; text-align: center;">天</td>
+                            
+                        </tr>
+                        <tr>
+                            <th>*</th>
+                            <th>付款方式</th>
+                            <td style="font-size:7px; text-align:left;">正常票期<input type="text" style="border:none;text-align: center;">天</td>
+                        </tr>
+                        <tr>
+                            <th>估價金額</th>
+                            <td id="AllAmount" colspan="2"contenteditable="true"></td>
+                        </tr>
+                        <table border="1"style="width:400px;margin-top:0">
+                            <tr>
+                                <th style="width: 100px;">價格異動悉知</th>
+                                <td>最低訂購量為1,000模次，若低於最低訂購量，需加收架模費用＿＿＿＿，若造成不便，盡請見諒。</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="height: 50px;">250 ～ 350 ➡ $ 3,500<br>125 ～ 200 ➡ $ 2,500</td>
+                            </tr>
+                        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
+        <div class="item3">
+            <div>
+                <table border="1px"style="width:400px; height:150px;">
+                    <tr>
+                        <td style="text-align:center;"><b>品名</b></td>
+                        <td colspan="2"contenteditable="true" style="text-align:center;">
+                            
+                            <!-- <button id="ProductOP" onclick="window.open('http://localhost:5500/ProductPg.html ', '', config='height=500,width=1000px,scrollbars=yes, location=no');">選擇產品</button> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;"><b>圖號</b></td>
+                        <td colspan="2" contenteditable="true" style="text-align:center ;"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;"><b>機型</b></td>
+                        <td style="text-align:center;" colspan="2" style="text-align:center">
+                            <select style="width:200px;text-align:center;font-size: 15px;border: none;">
+                                <option value="1">125T</option>
+                                <option value="2">200T</option>
+                                <option value="3">250T</option>
+                                <option value="4">350T</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;"><b>模數</b></td>
+                        <td colspan="2" contenteditable="true" style="text-align:center ;"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;"><b>訂量</b></td>
+                        <td  contenteditable="true" style="text-align:center;width: 250px;text-align: center;"></td>
+                        <td id="Unit" contenteditable="true" style="text-align:center ;"></td>
+                    </tr>
+                </table>
+                <button class="btn" style="background-color: rgba(240, 248, 255, 0);cursor:default;">一二三四</button>
+            </div>
+            
+           <hr>
+            <div style="height:300px ;">
+                
+                <h4 style="margin-top: 0px;">工程費<button class="btn"onclick="insertRow2()">新增</button></h4>
+                <div>
+                    <section class="section1">
+                        <table id="projectList"border="1" style="width:400px; text-align: center;">
+                          <thead>
+                            <th>NO.</th>
+                            <th>工程項目</th>
+                            <th>工程費用</th>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                    </section>
+                    <section class="section1">
+                        
+                    </section>
+                    </header>
+                    </div>
+            </div>
+            <hr>
+            
+            <div>
+                <h4 style="margin-top: 0px;">開模</h4>
+                <table border="1" style="width: 400px;margin-top: 0px;">
+                    <tr>
+                        <th style="width: 100px;">名稱</th>
+                        <td contenteditable="true" style="text-align:center;"></td>
+                    </tr>
+                    <tr>
+                        <th>模具費用</th>
+                        <td contenteditable="true"style="text-align:center ;"></td>
+                    </tr>
+                    <tr>
+                        <th>沖床模費用</th>
+                        <td contenteditable="true"style="text-align:center ;"></td>
+                    </tr>
+                    <tr>
+                        <th>試模時間</th>
+                        <td contenteditable="true"style="text-align:center ;"></td>
+                    </tr>
+                    <tr>
+                        <th  colspan="2">
+                        確認開模預付訂金30%，票期30天;模具試樣前，預付模具40%，票期30天;試樣確認OK後，付清尾款30%，票期60天。
+                        </th>
+                    </tr>
+                </table>    
+            </div>
+            <div>
+                <table border="1"style="width:400px">
+                <tr>
+                    <th style="width:190px ;">估價廠商</th>
+                    <th>客戶簽收</th>
+                </tr>
+                <tr>
+                    <td style="height:108px ;"></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        
+        <div class="item4" style="margin-top: 0px;">
+            
+        </div>
+    </div>
+        <br>
+        <table style="width: 70%;font-size:15px;margin-left: auto;margin-right: auto;border: 0px; margin-top: 20px;">
+            <tr>
+                <td><img src="logo.png" alt="" style="height:30px; display: block;margin-left: auto;margin-right: auto;margin-top:0px;width: 30%;"></td>
+            </tr>
+        </table>
+        
+        <div id="CLmodal" class="CLmodal">  
+            <!-- Modal content -->
+            <div class="CLmodal-content">
+              <span class="close" id="CLmodalClose">&times;</span>
+                <div class="container">
+                    <button id="newCLbtn" class="btn" onclick="newCL()">新增客戶</button>
+                    <button id="delbtn" class="delbtn">刪除客戶</button>
+                    <form id="NewCL" style="display: none;">
+                        <input id="txtid" type="text" placeholder="客戶編號">
+                        <input id="txtname" type="text" placeholder="客戶名稱">
+                        <input id="txttel" type="text" placeholder="電話號碼">
+                        <input id="txtfax" type="text" placeholder="傳真號碼">
+                        <input id="txtcontact" type="text" placeholder="客戶聯絡人">
+                        <input id="txtpay" type="text" placeholder="收款類別">
+                        <input id="addRow" type="button" value="新增">
+                    </form>
+                    <br>
+                    <table id="myDataTable"  class="display" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th>客戶編號</th>
+                                <th>客戶名稱</th>
+                                <th>電話號碼</th>
+                                <th>傳真號碼</th>
+                                <th>客戶聯絡人</th>
+                                <th>收款類別</th>
+                                <th>動作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10002</td>
+                                <td>鉑泰實業股份有限公司</td>
+                                <td>04-23929896</td>
+                                <td>04-23929987</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10005</td>
+                                <td>容克光機科技股份有限公司</td>
+                                <td>04-25271808</td>
+                                <td>04-25289508</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10007</td>
+                                <td>寰宇精工股份有限公司</td>
+                                <td>04-8855196</td>
+                                <td>04-8855197</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10009</td>
+                                <td>懋曄企業股份有限公司</td>
+                                <td>07-2377661-5  FAX:(會計)07-2377666</td>
+                                <td>07-2377667-8</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10010</td>
+                                <td>龍建工業有限公司</td>
+                                <td>04-25208790</td>
+                                <td>04-25253188</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10011</td>
+                                <td>義坤金屬工業有限公司</td>
+                                <td>02-29952330</td>
+                                <td>02-29952509</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10013</td>
+                                <td>明弓實業有限公司</td>
+                                <td>04-25614381</td>
+                                <td>04-25615420</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10014</td>
+                                <td>台灣歐寶貿易有限公司</td>
+                                <td>04-22272655</td>
+                                <td>04-22237555</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10015</td>
+                                <td>鑽全實業股份有限公司</td>
+                                <td>04-23598877-3125(34路-高)  3202(36路-陳)</td>
+                                <td>04-23598869</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10017</td>
+                                <td>商景企業股份有限公司</td>
+                                <td>04-25675382</td>
+                                <td>04-25677710</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10020</td>
+                                <td>RONNEX SINGAPORE PTE LTD (新加坡)</td>
+                                <td>00265-64847887</td>
+                                <td>00265-64847889</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10022</td>
+                                <td>旭華光學股份有限公司</td>
+                                <td>04-25357008</td>
+                                <td>04-25324158</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10023</td>
+                                <td>旭本機械廠股份有限公司</td>
+                                <td>04-25255378</td>
+                                <td>04-25235098</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10028</td>
+                                <td>有長工業股份有限公司</td>
+                                <td>047-382196</td>
+                                <td>047-387369</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10029</td>
+                                <td>詠農工業股份有限公司</td>
+                                <td>04-25229079</td>
+                                <td>04-25207482</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10030</td>
+                                <td>喬本企業有限公司</td>
+                                <td>07-8135228</td>
+                                <td>07-8157210</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10031</td>
+                                <td>日榮興實業有限公司</td>
+                                <td>04-25343178</td>
+                                <td>04-25343179</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10035</td>
+                                <td>台泰科技股份有限公司</td>
+                                <td>05-6930463.04-2</td>
+                                <td>05-6937985.04-2</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10035-1</td>
+                                <td>台因精密工業股份有限公司</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10038</td>
+                                <td>捷世達企業有限公司</td>
+                                <td>04-8925322</td>
+                                <td>04-8925284</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10045</td>
+                                <td>富錮有限公司</td>
+                                <td>02-23255161</td>
+                                <td>02-23257122</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10048</td>
+                                <td>仂鑫機械工業股份有限公司</td>
+                                <td>04-25313580</td>
+                                <td>04-25330813</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10049</td>
+                                <td>奎欣企業有限公司</td>
+                                <td>03-5564228</td>
+                                <td>03-5565374</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10051</td>
+                                <td>益倍有限公司</td>
+                                <td>04-25377979</td>
+                                <td>04-25370729</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10052</td>
+                                <td>上川事業股份有限公司</td>
+                                <td>04-26870301</td>
+                                <td>04-26870300</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10055</td>
+                                <td>世揚開發實業有限公司</td>
+                                <td>04-25312216</td>
+                                <td>04-25326355</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10057</td>
+                                <td>延裕企業有限公司</td>
+                                <td>02-29012944</td>
+                                <td>02-29043551</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10058</td>
+                                <td>宏錏實業股份有限公司</td>
+                                <td>04-25675182</td>
+                                <td>04-25674988</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10059</td>
+                                <td>奕得貿易股份有限公司</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10060</td>
+                                <td>羿霖企業社(三榮)</td>
+                                <td>04-26713516-7</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10060-1</td>
+                                <td>福得車業有限公司</td>
+                                <td>04-26713516-7</td>
+                                <td>04-26712998</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10061</td>
+                                <td>祥瑞金屬企業有限公司</td>
+                                <td>04-25203091</td>
+                                <td>04-25201817</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10062</td>
+                                <td>捷暢國際股份有限公司</td>
+                                <td>04-22153977</td>
+                                <td>04-22153208</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10064</td>
+                                <td>呈昊企業有限公司</td>
+                                <td>02-29997605</td>
+                                <td>02-29998163</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10066</td>
+                                <td>豐祥金屬工業股份有限公司</td>
+                                <td>02-22028393</td>
+                                <td>02-22068043</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10067</td>
+                                <td>有成精密股份有限公司</td>
+                                <td>03-5688699</td>
+                                <td>03-5688580</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10068</td>
+                                <td>肯進工業股份有限公司</td>
+                                <td>04-25378063</td>
+                                <td>04-25346339</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10069</td>
+                                <td>利盈玩具企業有限公司</td>
+                                <td>(04)22757546</td>
+                                <td>(04)22757446</td>
+                                <td>羅文和</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10070</td>
+                                <td>新可大國際股份有限公司</td>
+                                <td>04-26822656</td>
+                                <td>04-26811616</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10072</td>
+                                <td>苗成企業股份有限公司</td>
+                                <td>04-7811988-258</td>
+                                <td>04-7811987</td>
+                                <td></td>
+                                <td>支票</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10078</td>
+                                <td>合元群股份有限公司</td>
+                                <td>04-22120821</td>
+                                <td>04-22118636</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10091</td>
+                                <td>合富國際股份有限公司</td>
+                                <td>04-23580698-323.325   04-26380961</td>
+                                <td>04-23599410 04-26380963</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10095</td>
+                                <td>桓煒工業有限公司</td>
+                                <td>04-25330556</td>
+                                <td>04-25330267</td>
+                                <td>陳先生</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10098</td>
+                                <td>泰譽企業股份有限公司</td>
+                                <td>02-27482128#10</td>
+                                <td>02-27482168</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10098-1</td>
+                                <td>太譽國際有限公司</td>
+                                <td>02-27482128-10</td>
+                                <td>02-27482127</td>
+                                <td>陳惠如#18</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10099</td>
+                                <td>富國興業股份有限公司</td>
+                                <td>04-2563-3805 Ext.28</td>
+                                <td>04-2563-3810</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10100</td>
+                                <td>亞拓科技股份有限公司</td>
+                                <td>04-25279117-劉祐任607</td>
+                                <td>04-25245244</td>
+                                <td>劉小姐607#</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10101</td>
+                                <td>鳴威科技有限公司</td>
+                                <td>04-22151077</td>
+                                <td>04-22133489</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10102</td>
+                                <td>鎂格納精密工業股份有限公司</td>
+                                <td>04-22615180</td>
+                                <td>04-22630406</td>
+                                <td>劉棟輝</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10103</td>
+                                <td>蕎鋒企業有限公司</td>
+                                <td>04-23892785</td>
+                                <td>04-23829681</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10104</td>
+                                <td>景巽企業有限公司</td>
+                                <td>04-25629189</td>
+                                <td>04-25628977</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10105</td>
+                                <td>豐盛鎂合金股份有限公司</td>
+                                <td>04-25623629</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10106</td>
+                                <td>池田企業股份有限公司</td>
+                                <td>04-25723112</td>
+                                <td>04-25379339</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10107</td>
+                                <td>銀響有限公司</td>
+                                <td>04-25279914</td>
+                                <td>04-25279914</td>
+                                <td>余小姐</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10108</td>
+                                <td>瑞章精密工業股份有限公司</td>
+                                <td>06-2305311</td>
+                                <td>06-2307378.3303540</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10109</td>
+                                <td>金盛元興業股份有限公司</td>
+                                <td>04-25669968</td>
+                                <td>04-25688123</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10110</td>
+                                <td>協育股份有限公司</td>
+                                <td>04-25360847</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10111</td>
+                                <td>捷岱企業有限公司</td>
+                                <td>04-22619619</td>
+                                <td></td>
+                                <td>詹先生</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10112</td>
+                                <td>世郁股份有限公司</td>
+                                <td>04-25618453</td>
+                                <td>04-25615189</td>
+                                <td>洪兆華</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10113</td>
+                                <td>怪怪貿易有限公司</td>
+                                <td>04-7989000</td>
+                                <td>04-7989900</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10114</td>
+                                <td>億斌工業股份有限公司</td>
+                                <td>04-25669160   0912-600968</td>
+                                <td>04-25680301</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10115</td>
+                                <td>瑪仕特國際有限公司</td>
+                                <td>04-7760106</td>
+                                <td>04-7760206</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10115-1</td>
+                                <td>虎將興業股份有限公司</td>
+                                <td>04-7760106</td>
+                                <td>04-7760206</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10116</td>
+                                <td>南開鎖業有限公司</td>
+                                <td>04-25367218</td>
+                                <td>04-25368172</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10117</td>
+                                <td>日月明國際股份有限公司</td>
+                                <td>04-25723568</td>
+                                <td>04-25722500</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10118</td>
+                                <td>景揚企業社</td>
+                                <td>04-22776850</td>
+                                <td>04-22776851</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10119</td>
+                                <td>MARUSHIN KOGYO CO.,Ltd.</td>
+                                <td>048-253-1511</td>
+                                <td>048-251-0738</td>
+                                <td>鍾佩貞</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10120</td>
+                                <td>力得益工業有限公司</td>
+                                <td>04-24929268</td>
+                                <td>04-24932429</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10121</td>
+                                <td>琪泰工業股份有限公司</td>
+                                <td>04-25574366 602.607.</td>
+                                <td>04-25569468</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10122</td>
+                                <td>加沅企業有限公司</td>
+                                <td>02-2751-2658</td>
+                                <td>02-2751-2618</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10123</td>
+                                <td>美宏洋有限公司</td>
+                                <td>03-3291520-1216    羅-0939-920198</td>
+                                <td>03-3498051</td>
+                                <td>陳貴琳</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10124</td>
+                                <td>元賀股份有限公司</td>
+                                <td>04-25270413~4</td>
+                                <td>04-25278754</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10125</td>
+                                <td>警星國際企業有限公司</td>
+                                <td>02-82272600  205</td>
+                                <td>02-82272900</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10126</td>
+                                <td>連毅精密企業有限公司</td>
+                                <td>07-7881508</td>
+                                <td>07-7880913</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10127</td>
+                                <td>星野光學有限公司</td>
+                                <td>04-7573688</td>
+                                <td>04-7575068</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10128</td>
+                                <td>政豐氣動工業股份有限公司</td>
+                                <td>04-22626664</td>
+                                <td>04-22625082</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10129</td>
+                                <td>大地光纖股份有限公司</td>
+                                <td>07-9700158/770呂   8158055-690(倉管)</td>
+                                <td>07-8158456</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10130</td>
+                                <td>銀鴻鋁業股份有限公司</td>
+                                <td>04-26930828</td>
+                                <td>04-26935676</td>
+                                <td>盧銀墩</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10131</td>
+                                <td>台灣慧琪貿易有限公司</td>
+                                <td>04-22712916</td>
+                                <td>04-22712925</td>
+                                <td>呂思聰</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10132</td>
+                                <td>極程精密有限公司</td>
+                                <td>0989926027</td>
+                                <td>06-3582056</td>
+                                <td>林志學</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10133</td>
+                                <td>萬向精密股份有限公司</td>
+                                <td>04-22606498</td>
+                                <td>04-22608743</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10134</td>
+                                <td>源文興工業股份有限公司</td>
+                                <td>04-8855111#165</td>
+                                <td>04-8810007</td>
+                                <td>胡大偉David Hu</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10135</td>
+                                <td>太業科技股份有限公司</td>
+                                <td>03-4728155</td>
+                                <td>03-4725979</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10136</td>
+                                <td>茂綱實業股份有限公司</td>
+                                <td>04-25602860</td>
+                                <td>04-25654246</td>
+                                <td>黃信維</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10137</td>
+                                <td>七宇實業股份有限公司</td>
+                                <td>04-25826666</td>
+                                <td>04-25825555</td>
+                                <td>邱志文</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10138</td>
+                                <td>保勝光學股份有限公司</td>
+                                <td>04-25320168~9</td>
+                                <td>04-25332501</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10139</td>
+                                <td>保聯企業股份有限公司</td>
+                                <td>04-25273604</td>
+                                <td>04-25278253</td>
+                                <td>黃韋豪55#</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10140</td>
+                                <td>世佳工業股份有限公司</td>
+                                <td>04-7813367</td>
+                                <td>04-7813588</td>
+                                <td>張永昌</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10141</td>
+                                <td>天軍有限公司</td>
+                                <td>04-25256461#330#332</td>
+                                <td>04-25256484</td>
+                                <td>王雪珠</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10141-1</td>
+                                <td>一芝軒企業有限公司</td>
+                                <td>04-25256461</td>
+                                <td>04-25256484</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10142</td>
+                                <td>欣楷鑫股份有限公司</td>
+                                <td>04-7351341</td>
+                                <td>04-7352646</td>
+                                <td>康仕昇</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10143</td>
+                                <td>天勤精機股份有限公司</td>
+                                <td>04-23828355</td>
+                                <td>04-23824155</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10143-1</td>
+                                <td>天奕精密工業股份有限公司</td>
+                                <td>04-23828355</td>
+                                <td>04-23824155</td>
+                                <td>黃馨弘</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10144</td>
+                                <td>崑鑫國際實業有限公司</td>
+                                <td>04-24735857</td>
+                                <td>04-24739200</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10145</td>
+                                <td>台克有限公司</td>
+                                <td>04-24630040</td>
+                                <td>04-24635571</td>
+                                <td>Cole</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10146</td>
+                                <td>信灣電機企業股份有限公司</td>
+                                <td>02-26620728</td>
+                                <td>02-26627019</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10147</td>
+                                <td>大豪精密股份有限公司</td>
+                                <td>06-2530291</td>
+                                <td>06-2541550</td>
+                                <td>陳祈安</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10148</td>
+                                <td>樂酷馬智動科技股份有限公司</td>
+                                <td>047-363813</td>
+                                <td>047-365159</td>
+                                <td>柯小姐</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10149</td>
+                                <td>台灣向大企業有限公司</td>
+                                <td>02-27274000</td>
+                                <td>04-27270804</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10150</td>
+                                <td>宥豪事業有限公司</td>
+                                <td>04-22953101</td>
+                                <td>04-22953181</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10151</td>
+                                <td>碩頂精密工業股份有限公司</td>
+                                <td>04-23114873</td>
+                                <td>04-23114874</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10151-1</td>
+                                <td>頂善企業股份有限公司</td>
+                                <td>04-23114873</td>
+                                <td>04-23114874</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10152</td>
+                                <td>般若科技股份有限公司</td>
+                                <td>04-23597455</td>
+                                <td>04-23595003</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10153</td>
+                                <td>鎂安精密股份有限公司</td>
+                                <td>04-25323414~6</td>
+                                <td>04-25323418</td>
+                                <td>黃安頡</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10154</td>
+                                <td>進豪工業股份有限公司</td>
+                                <td>04-25614188</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10155</td>
+                                <td>通合工業股份有限公司</td>
+                                <td>04-25382923-211王小姐</td>
+                                <td>04-25382925</td>
+                                <td>羅育倫</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10156</td>
+                                <td>張永股份有限公司</td>
+                                <td>04-25574932</td>
+                                <td>04-25573593</td>
+                                <td>紀經理</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10157</td>
+                                <td>接觸燈飾有限公司</td>
+                                <td>02-86768848</td>
+                                <td>02-86768881</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10158</td>
+                                <td>力國實業</td>
+                                <td>04-7326568</td>
+                                <td>04-7982652</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10159</td>
+                                <td>馬思技企業有限公司</td>
+                                <td>04-7876555</td>
+                                <td>04-7879555</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10160</td>
+                                <td>期峰股份有限公司</td>
+                                <td>04-25254361</td>
+                                <td>04-25245102</td>
+                                <td>陳明貴</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10161</td>
+                                <td>立多精工密有限公司</td>
+                                <td>06-5986589</td>
+                                <td>06-5981926</td>
+                                <td>黃明德</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10162</td>
+                                <td>德僑企業有限公司</td>
+                                <td>04-25611921</td>
+                                <td>04-25611920</td>
+                                <td>廖宛渝</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10162-1</td>
+                                <td>台灣帝鄉實業有限公司</td>
+                                <td>04-25611921</td>
+                                <td>04-25611920</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10163</td>
+                                <td>晨允企業有限公司</td>
+                                <td>04-7554588</td>
+                                <td>04-7568445</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10163-1</td>
+                                <td>冠翊企業有限公司</td>
+                                <td>04-7563090</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10164</td>
+                                <td>鼎碩創新股份有限公司</td>
+                                <td>04-25284169</td>
+                                <td>04-25206137</td>
+                                <td>林祖祺 小姐</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10165</td>
+                                <td>川方企業股份有限公司</td>
+                                <td>02-24971788#865</td>
+                                <td>02-24971699</td>
+                                <td>阮厚聖</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10166</td>
+                                <td>吉輝鋁業股份有限公司</td>
+                                <td>04-25336518</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10167</td>
+                                <td>禾日泰科技股份有限公司</td>
+                                <td>0937-779797</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10168</td>
+                                <td>傑成企業有限公司</td>
+                                <td>0987-131616</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10169</td>
+                                <td>晟皓國際企業有限公司</td>
+                                <td>04-25310025</td>
+                                <td>04-25310035</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10170</td>
+                                <td>億豐科技有限公司</td>
+                                <td>07-5506330    胡勝裕 0920-092068</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10171</td>
+                                <td>華星樂器製造股份有限公司</td>
+                                <td>04-22390332   22391378</td>
+                                <td>04-22391837</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11001</td>
+                                <td>王先生</td>
+                                <td>0912-431868</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11002</td>
+                                <td>億輝企業社</td>
+                                <td>049-2523974、(H)049-2527415</td>
+                                <td>049-2510122</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11003</td>
+                                <td>劦豐鋁業股份有限公司</td>
+                                <td>04-25327961</td>
+                                <td>04-25331937</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11004</td>
+                                <td>季宏實業有限公司</td>
+                                <td>04-7357224</td>
+                                <td>04-7367782</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11005</td>
+                                <td>勇信企業股份有限公司</td>
+                                <td>04-23389907    0936296281  0911687951李老闆</td>
+                                <td>04-23361040</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11006</td>
+                                <td>維格工業股份有限公司</td>
+                                <td>04-26816991</td>
+                                <td>04-26821909</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11007</td>
+                                <td>台淵有限公司</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11008</td>
+                                <td>日亞丹下通商股份有限公司</td>
+                                <td>04-23580100</td>
+                                <td>04-23580669</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11009</td>
+                                <td>電威電機工廠股份有限公司</td>
+                                <td>04-8812166</td>
+                                <td>04-8817911</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11009-1</td>
+                                <td>亞企實業有限公司</td>
+                                <td>04-8812166</td>
+                                <td>04-8817911</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11010</td>
+                                <td>冠億壓鑄工業股份有限公司</td>
+                                <td>04-26816801</td>
+                                <td>04-26816822</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>20002</td>
+                                <td>崧運企業社</td>
+                                <td>04-25359555</td>
+                                <td>04-25317651</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>40002</td>
+                                <td>上杰零件企業社</td>
+                                <td>04-25664363</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>40004</td>
+                                <td>郡隆工業有限公司</td>
+                                <td>04-25680206   邱小姐</td>
+                                <td>04-25680204</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>40007</td>
+                                <td>昭朗精密工業有限公司</td>
+                                <td>04-25616068 王小姐</td>
+                                <td>25620528</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>40021</td>
+                                <td>亞柏企業社</td>
+                                <td>04-25620033</td>
+                                <td>04-25629970</td>
+                                <td>張萬庭</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>40090</td>
+                                <td>泰興精密企業有限公司</td>
+                                <td>07-7881508-方莉雅(生管-113.114莊先生)</td>
+                                <td>07-7880913</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>80008</td>
+                                <td>侑能有限公司</td>
+                                <td>04-8658448</td>
+                                <td>04-8659677</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>999999</td>
+                                <td>閎國興業股份有限公司</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+             
+
+
+<!-- The Modal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.12.1/b-2.2.3/sl-1.4.0/datatables.min.js"></script>
+<script type="text/javascript" src="Editor-2.0.8/js/dataTables.editor.js"></script> -->
+<script src="Quotation.js"></script>
+<script src="Material.js"></script>
+<script src="Project.js"></script>
+<script src="TotalAmount.js"></script>
+
+<script>
+    $('#date').val(new Date().toISOString().slice(0, 10));
+
+    
+    
+</script>
+</body>
+</html>
